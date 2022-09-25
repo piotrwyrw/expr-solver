@@ -1,7 +1,5 @@
 const colors = require('colors')
 
-const variables = []
-
 class Parser {
     currTok = null
     nextTok = null
@@ -132,6 +130,11 @@ class Parser {
 
 }
 
+
+/**
+ * Validate and prepare the input for processing
+ */
+
 const args = process.argv.slice(2)
 
 if (args.length !== 1) {
@@ -140,11 +143,12 @@ if (args.length !== 1) {
 
 args[0] = args[0].replace(/\s/g,'')
 
-const parser = new Parser(args[0])
 
-function isLetter(str) {
-    return str.length === 1 && str.match(/[a-z]/i);
-}
+/**
+ * Parse the expression
+ */
+
+const parser = new Parser(args[0])
 
 console.log('Parsing the expression ..')
 
@@ -154,6 +158,13 @@ if (parser.nextTok !== null)
     throw 'Token buffer is not empty -- Possible syntax errors.'
 
 console.log(JSON.stringify(parseResult, null, 4))
+
+
+/**
+ * Generate the truth table
+ */
+
+const variables = []
 
 truthTable(parseResult)
 
@@ -178,11 +189,10 @@ function truthTable(expr) {
             }
 }
 
-function applyColor(res, v) {
-    if (res)
-        return (v ? v.toString().green : v.toString().red)
-    return v
-}
+
+/**
+ * Solving logic
+ */
 
 function solve(part, write) {
 
@@ -242,4 +252,19 @@ function solveVariable(variable, write) {
     let name = variable.name
     if (write) process.stdout.write(name)
     return variables[name]
+}
+
+
+/**
+ * Utility functions
+ */
+
+function applyColor(res, v) {
+    if (res)
+        return (v ? v.toString().green : v.toString().red)
+    return v
+}
+
+function isLetter(str) {
+    return str.length === 1 && str.match(/[a-z]/i);
 }
