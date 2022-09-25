@@ -170,7 +170,7 @@ function truthTable(expr) {
 
                 let res = solve(expr)
 
-                console.log(applyColor(res, variables['a']) + ' ' + applyColor(res, variables['b']) + ' ' + applyColor(res, variables['c']) + ' ' + (res ? '1'.green : '0'.red))
+                console.log(applyColor(res, variables['a']) + '   ' + applyColor(res, variables['b']) + '   ' + applyColor(res, variables['c']) + '   ' + (res ? '1'.green : '0'.red))
             }
 }
 
