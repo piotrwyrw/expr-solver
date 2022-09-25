@@ -42,8 +42,6 @@ class Parser {
 
     parseAny() {
         let expr = this.parseBinaryExpressionFirst()
-        if (this.nextTok !== null)
-            throw 'Token buffer is not empty - possible syntax errors.'
         return expr
     }
 
@@ -54,17 +52,18 @@ class Parser {
             this.consumeToken()
 
         while (this.currTok === '|' || this.currTok === '^') {
+            let _type = this.currTok
             this.consumeToken()
             let right = this.parseBinaryExpressionFirst()
             left = {
                 binary: {
                     where: this.tokenPtr,
-                    type: (this.currTok === '|') ? 'or' : 'xor',
+                    type: (_type === '|') ? 'or' : 'xor',
                     left,
                     right
                 }
             }
-            if (this.nextTok === '|' && this.nextTok !== '^')
+            if (this.nextTok === '|' || this.nextTok === '^')
                 this.consumeToken()
         }
 
@@ -139,6 +138,8 @@ if (args.length !== 1) {
     throw 'Expected 1 argument: Input expression.'
 }
 
+args[0] = args[0].replace(/\s/g,'')
+
 const parser = new Parser(args[0])
 
 function isLetter(str) {
@@ -148,6 +149,9 @@ function isLetter(str) {
 console.log('Parsing the expression ..')
 
 let parseResult = parser.parseAny()
+
+if (parser.nextTok !== null)
+    throw 'Token buffer is not empty -- Possible syntax errors.'
 
 console.log(JSON.stringify(parseResult, null, 4))
 
