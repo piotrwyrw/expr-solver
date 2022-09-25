@@ -1,0 +1,15 @@
+{
+  "name": "ExpressionSolver",
+  "version": "1.0.0",
+  "description": "A boolean expression solver implemented in NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js \\\"a^b\\\""
+  },
+  "keywords": [],
+  "author": "Piotr Wyrwas K.",
+  "license": "GNU General Public License",
+  "dependencies": {
+    "colors": "^1.4.0"
+  }
+}
