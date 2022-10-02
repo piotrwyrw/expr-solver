@@ -4,7 +4,7 @@
   "description": "A boolean expression solver implemented in NodeJS",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js \"(a & !b) | (!a & b)\""
+    "test": "node index.js \"(a & b) ^ c|q\""
   },
   "keywords": [],
   "author": "Piotr Wyrwas K.",

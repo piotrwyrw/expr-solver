@@ -1,5 +1,11 @@
 const colors = require('colors')
 
+const vn = Array.from(Array('q'.charCodeAt(0) - 'a'.charCodeAt(0))).map((v, i) => {
+    return 'a'.charCodeAt(0) + i
+}).map((v, i) => String.fromCharCode(v))
+
+console.log(vn)
+
 class Parser {
     currTok = null
     nextTok = null
@@ -157,7 +163,15 @@ let parseResult = parser.parseAny()
 if (parser.nextTok !== null)
     throw 'Token buffer is not empty -- Possible syntax errors.'
 
+console.log('Resulting abstract syntax tree:')
 console.log(JSON.stringify(parseResult, null, 4))
+
+let v = individuate(findVariables(parseResult))
+console.log(`Referenced variables: ${v}`)
+
+for (let i = 0; i < v.length; i ++)
+    if (!vn.includes(v[i]))
+        throw `Unknown variable: ${v[i]}. Legal identifiers: ${vn}`
 
 
 /**
@@ -166,6 +180,9 @@ console.log(JSON.stringify(parseResult, null, 4))
 
 const variables = []
 
+for (let i = 0; i < v; i ++)
+    variables[i] = 0
+
 truthTable(parseResult)
 
 function truthTable(expr) {
@@ -173,8 +190,9 @@ function truthTable(expr) {
     solve(expr, true)
     console.log('')
 
-    console.log('a | b | c | q')
-    console.log('--------------')
+    for (let i = 0; i < v.length; i ++)
+        process.stdout.write(`${'a' + i}   `)
+    console.log('Q')
 
     for (let a = 0; a < 2; a++)
         for (let b = 0; b < 2; b++)
@@ -256,6 +274,62 @@ function solveVariable(variable, write) {
 
 
 /**
+ * Examine the expression to find all variables
+ */
+
+function findVariables(part) {
+
+    let keys = Object.keys(part)
+
+    if (keys.length !== 1)
+        throw 'Too many keys.'
+
+    if (keys.includes('binary')) {
+        return mergeArrays (
+            findVariables(part.binary.left),
+            findVariables(part.binary.right)
+        )
+    }
+
+    if (keys.includes('variable'))
+        return part.variable.name
+
+    if (keys.includes('invert'))
+        return findVariables(part.invert.expression)
+
+    throw 'Unknown node type: ' + keys
+
+}
+
+
+/**
+ * Array utility functions
+ */
+
+function mergeArrays(a, b) {
+    let out = []
+    for (let i = 0; i < a.length; i++) {
+        out.push(a[i])
+    }
+    for (let i = 0; i < b.length; i++) {
+        out.push(b[i])
+    }
+    return out
+}
+
+function individuate(a) {
+    let out = []
+    for (let i = 0; i < a.length; i ++) {
+        if (out.includes(a[i]))
+            continue
+        out.push(a[i])
+    }
+    return out
+}
+
+
+
+/**
  * Utility functions
  */
 
@@ -267,4 +341,10 @@ function applyColor(res, v) {
 
 function isLetter(str) {
     return str.length === 1 && str.match(/[a-z]/i);
+}
+
+function computeRequiredBinaryDigits(num) {
+    return Math.floor(
+        Math.log2(num)
+    ) + 1
 }
