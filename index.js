@@ -187,23 +187,19 @@ truthTable(parseResult)
 function truthTable(expr) {
     process.stdout.write('AST-Based expression reconstruction: ')
     solve(expr, true)
-    console.log('')
 
-    for (let i = 0; i < v.length; i ++)
-        process.stdout.write(`${'a' + i}   `)
-    console.log('Q')
+    let b = generateBinary(v.length)
 
-    for (let a = 0; a < 2; a++)
-        for (let b = 0; b < 2; b++)
-            for (let c = 0; c < 2; c++) {
-                variables['a'] = a
-                variables['b'] = b
-                variables['c'] = c
+    b.forEach((e) => {
+        let bin = e
+        bin.forEach((digit, idx) => {
+            variables[vn[idx]] = digit
+        })
+    })
 
-                let res = solve(expr)
+    let res = solve(expr)
 
-                console.log(applyColor(res, variables['a']) + '   ' + applyColor(res, variables['b']) + '   ' + applyColor(res, variables['c']) + '   ' + (res ? '1'.green : '0'.red))
-            }
+    // TODO Print the truth table.
 }
 
 
@@ -342,11 +338,11 @@ function isLetter(str) {
     return str.length === 1 && str.match(/[a-z]/i);
 }
 
-function computeRequiredBinaryDigits(num) {
-    return Math.floor(
-        Math.log2(num)
-    ) + 1
-}
+// function computeRequiredBinaryDigits(num) {
+//     return Math.floor(
+//         Math.log2(num)
+//     ) + 1
+// }
 
 function binaryOf(num, digits) {
     let bitmask = 1
@@ -365,7 +361,7 @@ function reverse(arr) {
 function generateBinary(var_ct) {
     arr = []
     for (let i = 0; i < 2 ** var_ct; i ++)
-        arr.push( reverse(binaryOf(i, 8)) )
+        arr.push( reverse(binaryOf(i, var_ct)) )
     return arr
 }
 
