@@ -173,7 +173,6 @@ for (let i = 0; i < v.length; i ++)
     if (!vn.includes(v[i]))
         throw `Unknown variable: ${v[i]}. Legal identifiers: ${vn}`
 
-
 /**
  * Generate the truth table
  */
@@ -348,3 +347,26 @@ function computeRequiredBinaryDigits(num) {
         Math.log2(num)
     ) + 1
 }
+
+function binaryOf(num, digits) {
+    let bitmask = 1
+    let arr = []
+    for (let i = 0; i < digits; i ++) {
+        arr.push((num & (bitmask << i)) > 0 ? 1 : 0)
+    }
+    return arr
+}
+
+function reverse(arr) {
+    let cpy = Array.from(arr)
+    return arr.map((value, index) => cpy[arr.length - index - 1])
+}
+
+function generateBinary(var_ct) {
+    arr = []
+    for (let i = 0; i < 2 ** var_ct; i ++)
+        arr.push( reverse(binaryOf(i, 8)) )
+    return arr
+}
+
+console.log(generateBinary(2))
