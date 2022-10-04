@@ -163,7 +163,7 @@ console.log('Resulting abstract syntax tree:')
 console.log(JSON.stringify(parseResult, null, 4))
 
 let v = individuate(findVariables(parseResult))
-console.log(`Referenced variables: ${v}`)
+console.log(`Referenced variables: ${v} (${v.length})`)
 
 for (let i = 0; i < v.length; i ++)
     if (!vn.includes(v[i]))
@@ -192,18 +192,23 @@ function truthTable(expr) {
         bin.forEach((digit, idx) => {
             variables[vn[idx]] = digit
         })
-        process.stdout.write(JSON.stringify(bin))
-        console.log(` ==> ${solve(expr)}`)
+        let res = solve(expr)
+        printVariableArray(res, bin)
+        console.log(`--> ${(res) ? '1'.green : '0'.red}`)
     })
 }
 
+function printVariableArray(res, bin) {
+    bin.forEach((digit, index) => {
+        process.stdout.write(`${vn[index]}(${digit ? ( res ? '1'.green : '1') : (res ? '0'.red : '0')}) `)
+    })
+}
 
 /**
  * Solving logic
  */
 
 function solve(part, write) {
-
     if (typeof write === 'undefined')
         write = false
 
