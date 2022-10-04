@@ -4,8 +4,6 @@ const vn = Array.from(Array('q'.charCodeAt(0) - 'a'.charCodeAt(0))).map((v, i) =
     return 'a'.charCodeAt(0) + i
 }).map((v, i) => String.fromCharCode(v))
 
-console.log(vn)
-
 class Parser {
     currTok = null
     nextTok = null
@@ -117,9 +115,7 @@ class Parser {
 
         if (not)
             return {
-                invert: {
-                    expression
-                }
+                invert: { expression }
             }
 
         return expression
@@ -187,19 +183,18 @@ truthTable(parseResult)
 function truthTable(expr) {
     process.stdout.write('AST-Based expression reconstruction: ')
     solve(expr, true)
+    console.log()
 
     let b = generateBinary(v.length)
 
-    b.forEach((e) => {
+    b.forEach((e, superidx) => {
         let bin = e
         bin.forEach((digit, idx) => {
             variables[vn[idx]] = digit
         })
+        process.stdout.write(JSON.stringify(bin))
+        console.log(` ==> ${solve(expr)}`)
     })
-
-    let res = solve(expr)
-
-    // TODO Print the truth table.
 }
 
 
@@ -364,5 +359,3 @@ function generateBinary(var_ct) {
         arr.push( reverse(binaryOf(i, var_ct)) )
     return arr
 }
-
-console.log(generateBinary(2))
