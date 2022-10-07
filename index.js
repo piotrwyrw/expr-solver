@@ -139,18 +139,36 @@ class Parser {
 
 const args = process.argv.slice(2)
 
-if (args.length !== 1) {
-    throw 'Expected 1 argument: Input expression.'
+let expression = null
+let show_ast = false
+
+for (let i = 0; i < args.length; i ++) {
+
+    if (i + 1 < args.length && args[i] === '--expression') {
+        if (expression !== null)
+            throw 'Expression had already been specified.'
+
+        i ++
+        expression = args[i]
+        continue
+    }
+    if (args[i] === '--show-ast') {
+        show_ast = true
+        continue
+    }
+
 }
 
-args[0] = args[0].replace(/\s/g,'')
+if (expression === null)
+    throw 'Missing --expression parameter.'
 
+expression = expression.replace(/\s/g,'')
 
 /**
  * Parse the expression
  */
 
-const parser = new Parser(args[0])
+const parser = new Parser(expression)
 
 console.log('Parsing the expression ..')
 
@@ -159,8 +177,10 @@ let parseResult = parser.parseAny()
 if (parser.nextTok !== null)
     throw 'Token buffer is not empty -- Possible syntax errors.'
 
-console.log('Resulting abstract syntax tree:')
-console.log(JSON.stringify(parseResult, null, 4))
+if (show_ast) {
+    console.log('Resulting abstract syntax tree:')
+    console.log(JSON.stringify(parseResult, null, 4))
+}
 
 let v = individuate(findVariables(parseResult))
 console.log(`Referenced variables: ${v} (${v.length})`)
@@ -225,8 +245,10 @@ function solve(part, write) {
 
     if (keys.includes('invert')) {
         if (write)
-            process.stdout.write('!')
+            process.stdout.write('!(')
         let expr = solve(part.invert.expression, write)
+        if (write)
+            process.stdout.write(')')
         return !expr
     }
 

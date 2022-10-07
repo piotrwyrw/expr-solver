@@ -1,10 +1,10 @@
 {
-  "name": "ExpressionSolver",
-  "version": "1.0.0",
+  "name": "expression-solver",
+  "version": "7.10.22",
   "description": "A boolean expression solver implemented in NodeJS",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js \"(!a & b) | (a & !b)\""
+    "test": "node index.js --expression \"(!a & b) | (a & !b)\""
   },
   "keywords": [],
   "author": "Piotr Wyrwas K.",
