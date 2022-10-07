@@ -104,6 +104,14 @@ class Parser {
             this.consumeToken()
         }
 
+        if (['1', '0'].includes(this.currTok)) {
+            return {
+                literal: {
+                    bool: (not) ? !(this.currTok == '1') : this.currTok == '1'
+                }
+            }
+        }
+
         let expression = null;
 
         if (isLetter(this.currTok))
@@ -184,6 +192,8 @@ if (show_ast) {
 
 let v = individuate(findVariables(parseResult))
 console.log(`Referenced variables: ${v} (${v.length})`)
+if (v.length === 0)
+    console.log('Warning: This expression only consists of immediate values and hence has a single solution.')
 
 for (let i = 0; i < v.length; i ++)
     if (!vn.includes(v[i]))
@@ -201,17 +211,23 @@ for (let i = 0; i < v; i ++)
 truthTable(parseResult)
 
 function truthTable(expr) {
-    process.stdout.write('AST-Based expression reconstruction: ')
+    process.stdout.write('Explicit precedence: ')
     solve(expr, true)
     console.log()
+    console.log('_'.repeat(25))
 
     let b = generateBinary(v.length)
 
     b.forEach((e, superidx) => {
         let bin = e
+
         bin.forEach((digit, idx) => {
             variables[vn[idx]] = digit
         })
+
+        if (bin.length === 0)
+            process.stdout.write('[no var. inputs] ')
+
         let res = solve(expr)
         printVariableArray(res, bin)
         console.log(`--> ${(res) ? '1'.green : '0'.red}`)
@@ -242,6 +258,12 @@ function solve(part, write) {
 
     if (keys.includes('variable'))
         return solveVariable(part.variable, write)
+
+    if (keys.includes('literal')) {
+        if (write)
+            process.stdout.write(part.literal.bool == '1' ? '1' : '0')
+        return part.literal.bool == '1'
+    }
 
     if (keys.includes('invert')) {
         if (write)
@@ -313,6 +335,9 @@ function findVariables(part) {
 
     if (keys.includes('invert'))
         return findVariables(part.invert.expression)
+
+    if (keys.includes('literal'))
+        return []
 
     throw 'Unknown node type: ' + keys
 
