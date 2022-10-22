@@ -50,22 +50,22 @@ class Parser {
     parseBinaryExpressionFirst() {
         let left = this.parseBinaryExpressionSecond();
 
-        if (this.nextTok === '|' || this.nextTok === '^')
+        if (['|', '^', '>'].includes(this.nextTok))
             this.consumeToken()
 
-        while (this.currTok === '|' || this.currTok === '^') {
+        while (['|', '*', '>'].includes(this.currTok)) {
             let _type = this.currTok
             this.consumeToken()
             let right = this.parseBinaryExpressionFirst()
             left = {
                 binary: {
                     where: this.tokenPtr,
-                    type: (_type === '|') ? 'or' : 'xor',
+                    type: (_type === '|') ? 'or' : ((_type === '^') ? 'xor' : 'imply'),
                     left,
                     right
                 }
             }
-            if (this.nextTok === '|' || this.nextTok === '^')
+            if (['|', '^', '>'].includes(this.nextTok))
                 this.consumeToken()
         }
 
@@ -301,6 +301,8 @@ function solveBinary(binary, write) {
         return left && right
     else if (binary.type === 'xor')
         return (left && !right) || (!left && right)
+    else if (binary.type === 'imply')
+        return (!left) ? 1 : right;
     else
         throw 'Binary operation type must either be "or", "and", or "xor"'
 }
