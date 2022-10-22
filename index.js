@@ -154,6 +154,9 @@ function solveBinary(binary, write) {
     if (binary.type === 'xor' && write)
         process.stdout.write('^')
 
+    if (binary.type === 'imply' && write)
+        process.stdout.write('>')
+
     let right = solve(binary.right, write)
 
     if (write) process.stdout.write(')')

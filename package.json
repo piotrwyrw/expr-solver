@@ -5,7 +5,7 @@
   "description": "A boolean expression solver implemented in NodeJS",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js --show-ast --expression \"1 & ((!a & b) | (a & !b))\""
+    "test": "node index.js --show-ast --expression \"1 & ((!a & b) > (a & !b))\""
   },
   "keywords": [],
   "author": "Piotr Wyrwas K.",
