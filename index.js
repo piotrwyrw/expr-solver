@@ -53,7 +53,7 @@ class Parser {
         if (['|', '^', '>'].includes(this.nextTok))
             this.consumeToken()
 
-        while (['|', '*', '>'].includes(this.currTok)) {
+        while (['|', '^', '>'].includes(this.currTok)) {
             let _type = this.currTok
             this.consumeToken()
             let right = this.parseBinaryExpressionFirst()
@@ -190,7 +190,7 @@ if (show_ast) {
     console.log(JSON.stringify(parseResult, null, 4))
 }
 
-let v = individuate(findVariables(parseResult))
+let v = individuate(findVariables(parseResult)).sort()
 console.log(`Referenced variables: ${v} (${v.length})`)
 if (v.length === 0)
     console.log('Warning: This expression only consists of immediate values and hence has a single solution.')
@@ -222,7 +222,7 @@ function truthTable(expr) {
         let bin = e
 
         bin.forEach((digit, idx) => {
-            variables[vn[idx]] = digit
+            variables[v[idx]] = digit
         })
 
         if (bin.length === 0)
@@ -236,7 +236,7 @@ function truthTable(expr) {
 
 function printVariableArray(res, bin) {
     bin.forEach((digit, index) => {
-        process.stdout.write(`${vn[index]}(${digit ? ( res ? '1'.green : '1') : (res ? '0'.red : '0')}) `)
+        process.stdout.write(`${v[index]}(${digit ? ( res ? '1'.green : '1') : (res ? '0'.red : '0')}) `)
     })
 }
 
