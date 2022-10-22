@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "expr-solver",
   "version": "7.10.22.2",
   "description": "A boolean expression solver implemented in NodeJS",
