@@ -1,10 +1,6 @@
-import { Parser } from './parser.js'
+import { isLetter, Parser } from './parser.js'
+import { generateBinary, reverse, binaryOf, applyColor, mergeArrays, individuate } from './util.js'
 import 'colors'
-
-const vn = Array.from(Array('q'.charCodeAt(0) - 'a'.charCodeAt(0))).map((v, i) => {
-    return 'a'.charCodeAt(0) + i
-}).map((v, i) => String.fromCharCode(v))
-
 
 /**
  * Validate and prepare the input for processing
@@ -57,12 +53,14 @@ if (show_ast) {
 
 let v = individuate(findVariables(parseResult)).sort()
 console.log(`Referenced variables: ${v} (${v.length})`)
+
 if (v.length === 0)
     console.log('Warning: This expression only consists of immediate values and hence has a single solution.')
 
-for (let i = 0; i < v.length; i ++)
-    if (!vn.includes(v[i]))
-        throw `Unknown variable: ${v[i]}. Legal identifiers: ${vn}`
+v.forEach((v) => {
+    if (!isLetter(v))
+        throw `Illegal identifier: ${v}. Only letters are allowed.`
+})
 
 /**
  * Generate the truth table
@@ -208,69 +206,4 @@ function findVariables(part) {
 
     throw 'Unknown node type: ' + keys
 
-}
-
-
-/**
- * Array utility functions
- */
-
-function mergeArrays(a, b) {
-    let out = []
-    for (let i = 0; i < a.length; i++) {
-        out.push(a[i])
-    }
-    for (let i = 0; i < b.length; i++) {
-        out.push(b[i])
-    }
-    return out
-}
-
-function individuate(a) {
-    let out = []
-    for (let i = 0; i < a.length; i ++) {
-        if (out.includes(a[i]))
-            continue
-        out.push(a[i])
-    }
-    return out
-}
-
-
-
-/**
- * Utility functions
- */
-
-function applyColor(res, v) {
-    if (res)
-        return (v ? v.toString().green : v.toString().red)
-    return v
-}
-
-// function computeRequiredBinaryDigits(num) {
-//     return Math.floor(
-//         Math.log2(num)
-//     ) + 1
-// }
-
-function binaryOf(num, digits) {
-    let bitmask = 1
-    let arr = []
-    for (let i = 0; i < digits; i ++) {
-        arr.push((num & (bitmask << i)) > 0 ? 1 : 0)
-    }
-    return arr
-}
-
-function reverse(arr) {
-    let cpy = Array.from(arr)
-    return arr.map((value, index) => cpy[arr.length - index - 1])
-}
-
-function generateBinary(var_ct) {
-    let arr = []
-    for (let i = 0; i < 2 ** var_ct; i ++)
-        arr.push( reverse(binaryOf(i, var_ct)) )
-    return arr
 }
