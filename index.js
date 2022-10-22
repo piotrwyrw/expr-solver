@@ -304,7 +304,7 @@ function solveBinary(binary, write) {
     else if (binary.type === 'imply')
         return (!left) ? 1 : right;
     else
-        throw 'Binary operation type must either be "or", "and", or "xor"'
+        throw 'Binary operation type must either be "or", "and", "xor" or "imply"'
 }
 
 function solveVariable(variable, write) {
