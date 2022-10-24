@@ -333,7 +333,7 @@ function simpl_main(variableCount, minterms) {
         if(typeof implicant == "object") {
             implicant.forEach((c, i) => {
                 if(c === '-') return;
-                if(c === '0') process.stdout.write("!")
+                if(c === 0) process.stdout.write("!")
                 process.stdout.write(vars[i]);
             })
         } else {
