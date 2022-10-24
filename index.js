@@ -10,6 +10,7 @@ const args = process.argv.slice(2)
 
 let expression = null
 let show_ast = false
+let minTerms = []
 
 for (let i = 0; i < args.length; i ++) {
 
@@ -73,6 +74,8 @@ for (let i = 0; i < v; i ++)
 
 truthTable(parseResult)
 
+
+
 function truthTable(expr) {
     process.stdout.write('Explicit precedence: ')
     solve(expr, true)
@@ -92,9 +95,16 @@ function truthTable(expr) {
             process.stdout.write('[no var. inputs] ')
 
         let res = solve(expr)
+
+        if(res) minTerms.push(superidx);
         printVariableArray(res, bin)
         console.log(`--> ${(res) ? '1'.green : '0'.red}`)
     })
+
+    let varCount = Object.keys(variables).length;
+    simpl_main(varCount, minTerms)
+
+
 }
 
 function printVariableArray(res, bin) {
@@ -139,6 +149,41 @@ function solve(part, write) {
 
     throw 'Unknown node type: ' + keys
 
+}
+
+function add(m, n) {
+    let len = m.length, buff = '', count = 0, i;
+    for (i = 0; i < len; i++) {
+        if (m[i] == n[i])
+            buff += m[i];
+        else if (m[i] != n[i]) {
+            count += 1;
+            buff += '-';
+        }
+    }
+
+    if (count > 1)
+        return "";
+
+
+    return buff;
+}
+
+function decimalToBinary(variableCount, minterms) {
+    let binaryMinterms = [];
+    for (let i = 0; i < minterms.length; i++) {
+        let binary = minterms[i].toString(2);
+        let binaryLength = binary.length;
+        let temp = [];
+        for (let j = 0; j < variableCount - binaryLength; j++) {
+            temp.push(0);
+        }
+        for (let j = 0; j < binaryLength; j++) {
+            temp.push(parseInt(binary[j]));
+        }
+        binaryMinterms.push(temp);
+    }
+    return binaryMinterms;
 }
 
 function solveBinary(binary, write) {
@@ -209,4 +254,99 @@ function findVariables(part) {
 
     throw 'Unknown node type: ' + keys
 
+}
+
+
+function rep(n, count) {
+    let arr = [],
+        checkRec = (i) => {
+            if (i > 1) {
+                checkRec(i - 1);
+            }
+
+            arr.push(n);
+        };
+    checkRec(count);
+    return arr;
+}
+
+
+
+function findImplicants(data) {
+    let arr = [].concat(data),
+        size = arr.length,
+        im = [],
+        implicants = [],
+        im2 = [],
+        mr = rep(0, size),
+        mr2,
+        m = 0;
+
+    for (let i = 0; i < size; i++)
+        for (let j = i + 1; j < size; j++) {
+            let c = add(arr[i], arr[j]);
+            if (c !== "") {
+                im.push(c);
+                mr[i] = 1;
+                mr[j] = 1;
+            }
+        }
+
+
+    mr2 = rep(0, im.length);
+    for (let j = 0; j < im.length; j++)
+        for (let n = j + 1; n < im.length; n++) if (j !== n && mr2[n] === 0 && im[j] === im[n]) mr2[n] = 1;
+
+
+    for (let l = 0; l < size; l++) {
+        if (mr[l] === 0) {
+            implicants.push(arr[l]);
+            m++;
+        }
+    }
+
+    for (let k = 0; k < im.length; k++) if (mr2[k] === 0) im2.push(im[k]);
+
+
+    if (m !== size && size !== 1)
+        implicants = implicants.concat(findImplicants(im2));
+
+
+    implicants.sort();
+    return implicants;
+}
+
+
+
+function simpl_main(variableCount, minterms) {
+    const binaryMinterms = decimalToBinary(variableCount, minterms);
+    const primeImplicants = findImplicants(binaryMinterms);
+
+
+    let vars = Object.keys(variables)
+
+    console.log("Prime Implicants: " + primeImplicants)
+    process.stdout.write("Simplified Version: ");
+    primeImplicants.reverse()
+    primeImplicants.map(i => String(i))
+    primeImplicants.forEach((implicant, i1) => {
+        if(typeof implicant == "object") {
+            implicant.forEach((c, i) => {
+                if(c === '-') return;
+                if(c === 0) process.stdout.write("!")
+                process.stdout.write(vars[i]);
+            })
+        } else {
+            implicant.split("").forEach((c, i) => {
+                if(c === '-') return;
+                if(c === '0') process.stdout.write("!")
+                process.stdout.write(vars[i]);
+            })
+        }
+
+        if(i1 !== primeImplicants.length - 1) {
+            process.stdout.write("|");
+        }
+
+    })
 }
