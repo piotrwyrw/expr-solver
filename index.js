@@ -328,12 +328,22 @@ function simpl_main(variableCount, minterms) {
     console.log("Prime Implicants: " + primeImplicants)
     process.stdout.write("Simplified Version: ");
     primeImplicants.reverse()
+    primeImplicants.map(i => String(i))
     primeImplicants.forEach((implicant, i1) => {
-        implicant.split("").forEach((c, i) => {
-            if(c === '-') return;
-            if(c === '0') process.stdout.write("!")
-            process.stdout.write(vars[i]);
-        })
+        if(typeof implicant == "object") {
+            implicant.forEach((c, i) => {
+                if(c === '-') return;
+                if(c === '0') process.stdout.write("!")
+                process.stdout.write(vars[i]);
+            })
+        } else {
+            implicant.split("").forEach((c, i) => {
+                if(c === '-') return;
+                if(c === '0') process.stdout.write("!")
+                process.stdout.write(vars[i]);
+            })
+        }
+
         if(i1 !== primeImplicants.length - 1) {
             process.stdout.write("|");
         }
