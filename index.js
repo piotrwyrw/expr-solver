@@ -320,9 +320,9 @@ function findImplicants(data) {
 
 function simpl_main(variableCount, minterms) {
     if(minterms.length === 0) {
-        console.log("Simplified Version: 0")
+        console.log("Simplified Version: 0 (Contradiction)")
     } else if(minterms.length === Math.pow(2, variableCount)) {
-        console.log("Simplified Version: 1")
+        console.log("Simplified Version: 1 (Tautology)")
     } else {
         const binaryMinterms = decimalToBinary(variableCount, minterms);
         const primeImplicants = findImplicants(binaryMinterms);
