@@ -202,6 +202,9 @@ function solveBinary(binary, write) {
     if (binary.type === 'imply' && write)
         process.stdout.write('>')
 
+    if (binary.type === 'eq' && write)
+	process.stdout.write('=')
+
     let right = solve(binary.right, write)
 
     if (write) process.stdout.write(')')
@@ -214,6 +217,8 @@ function solveBinary(binary, write) {
         return (left && !right) || (!left && right)
     else if (binary.type === 'imply')
         return (!left) ? 1 : right;
+    else if (binary.type === 'eq')
+	return left === right;
     else
         throw 'Binary operation type must either be "or", "and", "xor" or "imply"'
 }

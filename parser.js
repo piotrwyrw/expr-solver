@@ -44,22 +44,22 @@ export class Parser {
     parseBinaryExpressionFirst() {
         let left = this.parseBinaryExpressionSecond();
 
-        if (['|', '^', '>'].includes(this.nextTok))
+        if (['|', '^', '>', '='].includes(this.nextTok))
             this.consumeToken()
 
-        while (['|', '^', '>'].includes(this.currTok)) {
+        while (['|', '^', '>', '='].includes(this.currTok)) {
             let _type = this.currTok
             this.consumeToken()
             let right = this.parseBinaryExpressionFirst()
             left = {
                 binary: {
                     where: this.tokenPtr,
-                    type: (_type === '|') ? 'or' : ((_type === '^') ? 'xor' : 'imply'),
+                    type: (_type === '|') ? 'or' : ((_type === '^') ? 'xor' : ((_type === '=') ? 'eq' :  'imply')),
                     left,
                     right
                 }
             }
-            if (['|', '^', '>'].includes(this.nextTok))
+            if (['|', '^', '>', '='].includes(this.nextTok))
                 this.consumeToken()
         }
 
