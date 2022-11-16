@@ -319,34 +319,40 @@ function findImplicants(data) {
 
 
 function simpl_main(variableCount, minterms) {
-    const binaryMinterms = decimalToBinary(variableCount, minterms);
-    const primeImplicants = findImplicants(binaryMinterms);
+    if(minterms.length === 0) {
+        console.log("Simplified Version: 0 (Contradiction)")
+    } else if(minterms.length === Math.pow(2, variableCount)) {
+        console.log("Simplified Version: 1 (Tautology)")
+    } else {
+        const binaryMinterms = decimalToBinary(variableCount, minterms);
+        const primeImplicants = findImplicants(binaryMinterms);
 
 
-    let vars = Object.keys(variables)
+        let vars = Object.keys(variables)
 
-    console.log("Prime Implicants: " + primeImplicants)
-    process.stdout.write("Simplified Version: ");
-    primeImplicants.reverse()
-    primeImplicants.map(i => String(i))
-    primeImplicants.forEach((implicant, i1) => {
-        if(typeof implicant == "object") {
-            implicant.forEach((c, i) => {
-                if(c === '-') return;
-                if(c === 0) process.stdout.write("!")
-                process.stdout.write(vars[i]);
-            })
-        } else {
-            implicant.split("").forEach((c, i) => {
-                if(c === '-') return;
-                if(c === '0') process.stdout.write("!")
-                process.stdout.write(vars[i]);
-            })
-        }
+        console.log("Prime Implicants: " + primeImplicants)
+        process.stdout.write("Simplified Version: ");
+        primeImplicants.reverse()
+        primeImplicants.map(i => String(i))
+        primeImplicants.forEach((implicant, i1) => {
+            if(typeof implicant == "object") {
+                implicant.forEach((c, i) => {
+                    if(c === '-') return;
+                    if(c === 0) process.stdout.write("!")
+                    process.stdout.write(vars[i]);
+                })
+            } else {
+                implicant.split("").forEach((c, i) => {
+                    if(c === '-') return;
+                    if(c === '0') process.stdout.write("!")
+                    process.stdout.write(vars[i]);
+                })
+            }
 
-        if(i1 !== primeImplicants.length - 1) {
-            process.stdout.write("|");
-        }
+            if(i1 !== primeImplicants.length - 1) {
+                process.stdout.write("|");
+            }
 
-    })
+        })
+    }
 }
